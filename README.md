@@ -11,7 +11,7 @@ This system supports both registered users and guests (email-only bookings), wit
 
   - Role-based access: ADMIN, MANAGER, USER, GUEST
 
-  - Only ADMIN and MANAGER routes are protected; rest APIs can be public
+  - Only ADMIN and MANAGER routes are protected; rest APIs are public
 
 * Theater & Screen Management
 
