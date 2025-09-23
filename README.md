@@ -89,33 +89,33 @@ src/main/java/com/krish/ticket_booking
 ## 📌 API Endpoints
 Auth
 
-```bash POST /api/auth/signup``` → Register user
+``` POST /api/auth/signup``` → Register user
 
-```bash POST /api/auth/login ``` → Get JWT token
+``` POST /api/auth/login ``` → Get JWT token
 
-```bash Theater / Screen ``` (Manager/Admin only)
+``` Theater / Screen ``` (Manager/Admin only)
 
-```bash POST /api/theaters ``` → Create theater
+``` POST /api/theaters ``` → Create theater
 
-```bash POST /api/theaters/{id}/screens ``` → Add screen
+``` POST /api/theaters/{id}/screens ``` → Add screen
 
 Seat Layout
 
-```bash POST /api/screens/{id}/layouts ``` → Create seat layout
+``` POST /api/screens/{id}/layouts ``` → Create seat layout
 
-```bash GET /api/screens/{id}/layouts ``` → List layouts
+``` GET /api/screens/{id}/layouts ``` → List layouts
 
 Shows
 
-```bash POST /api/screens/{id}/shows ``` → Create show
+``` POST /api/screens/{id}/shows ``` → Create show
 
-```bash GET /api/theaters/{id}/shows ``` → List shows by theater
+``` GET /api/theaters/{id}/shows ``` → List shows by theater
 
 Booking
 
-```bash POST /api/shows/{id}/bookings ``` → Book seats (user/guest)
+``` POST /api/shows/{id}/bookings ``` → Book seats (user/guest)
 
-```bash GET /api/bookings/{id} ``` → View booking details
+``` GET /api/bookings/{id} ``` → View booking details
 
 ## ⚡ Concurrency Handling
 
@@ -124,3 +124,60 @@ Booking
 * Reservation Timeout → Reserved seats auto-release after 15 mins if payment is not completed
 
 * Prevents double booking in high-traffic scenarios
+
+## 📃 Prerequisites
+
+### Software to be installed
+
+#### JDK 21
+
+  - Link-https://www.oracle.com/in/java/technologies/downloads/#java21
+
+  - After downloading , go to C drive open program files and then open folder named Java.
+
+  - In java folder select jdk21 and go to bin folder and copy the path.
+
+Path should be like this- C:\Program Files\Java\jdk-21\bin.
+
+Open environment variable and in user variable select path and paste the path for bin.
+
+#### Maven
+
+  - Link-https://maven.apache.org/download.cgi
+
+Download path should be the App folder created above in Project folder.
+Open downloaded maven folder and copy bin path .
+Set environment variable.
+
+#### PostGresql & pgAdmin4
+  - Download PostGresql  https://www.postgresql.org/download/
+
+  - pgAdmin4 https://www.pgadmin.org/download/
+
+### Database Setup (PostgreSQL)
+
+1. Open pgAdmin and connect to your PostgreSQL server.
+
+2. Create a new database:
+
+
+  * Right-click on Databases → Create → Database.
+
+  * Enter the name: ticket_booking.
+
+  * Set the owner (e.g., postgres).
+
+  * Click Save.
+## ▶ Getting Started
+
+### Command to Run
+Open command prompt in the folder to which the project has cloned to
+
+Run the below given commands in command prompt
+
+1. ``` mvn clean install ```
+
+2. ``` java -jar target/ticket-booking-0.0.1-SNAPSHOT.jar ```
+
+### Access Swagger API docs:
+Visit http://localhost:8080/swagger-ui/index.html
