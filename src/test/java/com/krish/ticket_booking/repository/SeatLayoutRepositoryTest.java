@@ -48,14 +48,7 @@ class SeatLayoutRepositoryTest {
                 .screen(screen)
                 .build();
 
-        seatLayout1 = testEntityManager.persistAndFlush(seatLayout1);
-
-//        SeatLayout seatLayout2 = SeatLayout.builder()
-//                .layoutType(LayoutType.IMAX)
-//                .screen(screen)
-//                .build();
-//
-//        seatLayout2 = testEntityManager.persistAndFlush(seatLayout2);
+        seatLayout1 = seatLayoutRepository.save(seatLayout1);
 
         testEntityManager.flush();
         testEntityManager.clear();

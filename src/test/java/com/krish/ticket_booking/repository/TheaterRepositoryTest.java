@@ -32,21 +32,21 @@ class TheaterRepositoryTest {
                 .location("Mananthavady")
                 .build();
 
-        theater1 = testEntityManager.persistAndFlush(theater1);
+        theater1 = theaterRepository.save(theater1);
 
         Theater theater2 = Theater.builder()
                 .name("Jose Cinemas")
                 .location("Mananthavady")
                 .build();
 
-        theater2 = testEntityManager.persistAndFlush(theater2);
+        theater2 = theaterRepository.save(theater2);
 
         Theater theater3 = Theater.builder()
                 .name("Jaithra")
                 .location("Kalpetta")
                 .build();
 
-        theater3 = testEntityManager.persistAndFlush(theater3);
+        theater3 = theaterRepository.save(theater3);
 
         testEntityManager.flush();
         testEntityManager.clear();
@@ -86,7 +86,7 @@ class TheaterRepositoryTest {
                 .manager(mgr1)
                 .build();
 
-        theater1 = testEntityManager.persistAndFlush(theater1);
+        theater1 = theaterRepository.save(theater1);
 
         Theater theater2 = Theater.builder()
                 .name("Jose Cinemas")
@@ -94,7 +94,7 @@ class TheaterRepositoryTest {
                 .manager(mgr2)
                 .build();
 
-        theater2 = testEntityManager.persistAndFlush(theater2);
+        theater2 = theaterRepository.save(theater2);
 
         Theater theater3 = Theater.builder()
                 .name("Jaithra")
@@ -102,7 +102,7 @@ class TheaterRepositoryTest {
                 .manager(mgr1)
                 .build();
 
-        theater3 = testEntityManager.persistAndFlush(theater3);
+        theater3 = theaterRepository.save(theater3);
 
         testEntityManager.flush();
         testEntityManager.clear();

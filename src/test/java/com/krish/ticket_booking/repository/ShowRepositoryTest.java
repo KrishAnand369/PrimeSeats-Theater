@@ -70,16 +70,12 @@ class ShowRepositoryTest {
                 .screen(screen1)
                 .build();
 
-        show1 = testEntityManager.persistAndFlush(show1);
-
         Show show2 = Show.builder()
                 .extraCharge(12)
                 .startTime(LocalDateTime.now().plusHours(2))  // Show start time (tomorrow)
                 .movie(movie)
                 .screen(screen1)
                 .build();
-
-        show2 = testEntityManager.persistAndFlush(show2);
 
         Show show3 = Show.builder()
                 .extraCharge(0)
@@ -88,7 +84,9 @@ class ShowRepositoryTest {
                 .screen(screen2)
                 .build();
 
-        show3 = testEntityManager.persistAndFlush(show3);
+        show1 = showRepository.save(show1);
+        show2 = showRepository.save(show2);
+        show3 = showRepository.save(show3);
 
         testEntityManager.flush();
         testEntityManager.clear();
