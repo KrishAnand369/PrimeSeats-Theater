@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true) // enables role-based checks using @PreAuthorize directly on  controller/service methods.
 public class SecurityConfig {
     private final JwtAuthFilter jwtFilter;
 
@@ -24,13 +24,14 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/manager/**").hasRole("MANAGER")
-                        //.anyRequest().authenticated() - if all endpoints to be authenticated
-                        .anyRequest().permitAll()
+                        //.anyRequest().authenticated() // - if all endpoints to be authenticated
+                        .anyRequest().permitAll() //allows any other request pattern to proceed without authentication
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
