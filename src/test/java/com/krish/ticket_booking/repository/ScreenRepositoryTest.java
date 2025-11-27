@@ -47,7 +47,6 @@ class ScreenRepositoryTest {
                 .createdAt(LocalDateTime.now())      // Creation timestamp
                 .build();
 
-        // Act - Execute the save operation
         Screen savedScreen1 = screenRepository.save(screen1);
 
         Screen screen2 = Screen.builder()
@@ -57,7 +56,6 @@ class ScreenRepositoryTest {
                 .createdAt(LocalDateTime.now())      // Creation timestamp
                 .build();
 
-        // Act - Execute the save operation
         Screen savedScreen2 = screenRepository.save(screen2);
 
         entityManager.flush();

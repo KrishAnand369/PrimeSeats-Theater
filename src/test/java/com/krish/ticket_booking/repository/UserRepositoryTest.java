@@ -31,7 +31,7 @@ class UserRepositoryTest {
                 .name("example")
                 .build();
 
-        user = entityManager.persistAndFlush(user);
+        user = userRepository.save(user);
 
 
         entityManager.flush();

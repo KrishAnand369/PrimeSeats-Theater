@@ -46,7 +46,6 @@ class SeatRepositoryTest {
                 .price(100.00)
                 .seatRow(seatRow)
                 .build();
-        seat = testEntityManager.persistAndFlush(seat);
 
         testEntityManager.flush();
         testEntityManager.clear();
@@ -95,7 +94,6 @@ class SeatRepositoryTest {
                 .price(100.00)
                 .seatRow(seatRow)
                 .build();
-        seat1 = testEntityManager.persistAndFlush(seat1);
 
         Seat seat2 = Seat.builder()
                 .category(PREMIUM)
@@ -103,7 +101,8 @@ class SeatRepositoryTest {
                 .price(100.00)
                 .seatRow(seatRow)
                 .build();
-        seat2 = testEntityManager.persistAndFlush(seat2);
+        seat1 = seatRepository.save(seat1);
+        seat2 = seatRepository.save(seat2);
 
         testEntityManager.flush();
         testEntityManager.clear();

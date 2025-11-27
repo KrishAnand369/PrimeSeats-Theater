@@ -235,7 +235,7 @@ class ShowSeatRepositoryTest {
                 .status(ShowSeatStatus.RESERVED)
                 .reservedUntil(Instant.now().minusSeconds(60)) // Expired 1 min ago
                 .build();
-        expiredSeat = testEntityManager.persistAndFlush(expiredSeat);
+        expiredSeat = showSeatRepository.save(expiredSeat);
 
         // Case 2: Active Reserved Seat (Future)
         ShowSeat activeSeat = ShowSeat.builder()
@@ -244,7 +244,7 @@ class ShowSeatRepositoryTest {
                 .status(ShowSeatStatus.RESERVED)
                 .reservedUntil(Instant.now().plusSeconds(60)) // Expires in 1 min
                 .build();
-        activeSeat = testEntityManager.persistAndFlush(activeSeat);
+        activeSeat = showSeatRepository.save(activeSeat);
 
         // Case 3: Booked Seat (Should be ignored)
         ShowSeat bookedSeat = ShowSeat.builder()
@@ -252,7 +252,7 @@ class ShowSeatRepositoryTest {
                 .seat(seat)
                 .status(ShowSeatStatus.BOOKED)
                 .build();
-        bookedSeat = testEntityManager.persistAndFlush(bookedSeat);
+        bookedSeat = showSeatRepository.save(bookedSeat);
 
         // Flush and Clear to ensure DB state
         testEntityManager.flush();
