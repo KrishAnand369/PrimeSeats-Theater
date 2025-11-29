@@ -30,6 +30,7 @@ import java.util.Optional;
 // Import JUnit assertions for test validation
 import static org.junit.jupiter.api.Assertions.*;
 // Import Mockito's any() matcher for flexible argument matching
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 // Import Mockito's anyString() matcher for string arguments
 import static org.mockito.ArgumentMatchers.anyString;
@@ -72,8 +73,9 @@ class UserServiceImplTest {
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
         // Mock the password encoder to return the encoded password
         when(passwordEncoder.encode(request.password())).thenReturn(encodedPassword);
-        // Mock the repository save to return the same user object
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // Mock the repository save to return the same user object ie first argument
+        when(userRepository.save(any(User.class))).then(returnsFirstArg());
+
 
         // Act - Execute the method under test
         User result = userService.createUserWithRole(request);
