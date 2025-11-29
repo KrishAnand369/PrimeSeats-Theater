@@ -66,11 +66,12 @@ public class TheaterServiceImpl implements TheaterService {
     @Override
     public void assignTheaterManager(UUID theaterId, UUID userId) {
         User manager = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not Found with id: " + userId));
-        Theater theater = theaterRepository.findById(theaterId).orElseThrow(()-> new TheaterNotFoundException("Theater not found with id: "+theaterId));
         if (!manager.getRole().equals(RoleEnum.MANAGER)) {
             throw new RuntimeException("Assigned user is not a manager");
         }
+        Theater theater = theaterRepository.findById(theaterId).orElseThrow(()-> new TheaterNotFoundException("Theater not found with id: "+theaterId));
         theater.setManager(manager);
+        theaterRepository.save(theater);
     }
 
     @Override
