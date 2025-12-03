@@ -357,48 +357,11 @@ class ShowServiceImplTest {
                 .genre("Action")
                 .title("Turbo")
                 .build();
-        Movie movieUpdated = Movie.builder()
-                .id(movieIdUpdated)
-                .duration(120)
-                .active(true)
-                .genre("Thriller")
-                .title("KalamKaval")
-                .build();
-
-        Seat seat1 = Seat.builder()
-                .seatNumber(10)
-                .id(UUID.randomUUID())
-                .category(SeatCategory.REGULAR)
-                .price(148.00)
-                .build();
-
-        Seat seat2 = Seat.builder()
-                .seatNumber(11)
-                .id(UUID.randomUUID())
-                .category(SeatCategory.REGULAR)
-                .price(148.00)
-                .build();
-
-        SeatRow seatRow = SeatRow.builder()
-                .id(UUID.randomUUID())
-                .seats(List.of(seat1,seat2))
-                .rowLabel("A1")
-                .build();
-        seat1.setSeatRow(seatRow);
-        seat2.setSeatRow(seatRow);
-        SeatLayout layout = SeatLayout.builder()
-                .id(UUID.randomUUID())
-                .layoutType(LayoutType.SCREEN_X)
-                .rows(List.of(seatRow))
-                .build();
-        seatRow.setSeatLayout(layout);
 
         Screen screen = Screen.builder()
                 .id(screenId)
                 .name("Screen1")
-                .seatLayout(layout)
                 .build();
-        layout.setScreen(screen);
 
         Show savedShow = Show.builder()
                 .id(showId)
@@ -406,6 +369,16 @@ class ShowServiceImplTest {
                 .screen(screen)
                 .startTime(LocalDateTime.now().plusHours(3).plusMinutes(30))
                 .extraCharge(10)
+                .showSeats(new ArrayList<>())
+                .build();
+
+
+        Movie movieUpdated = Movie.builder()
+                .id(movieIdUpdated)
+                .duration(120)
+                .active(true)
+                .genre("Thriller")
+                .title("KalamKaval")
                 .build();
 
         Seat seat1Updated = Seat.builder()
@@ -450,21 +423,6 @@ class ShowServiceImplTest {
                 .startTime(request.startTime())
                 .extraCharge(20)
                 .build();
-
-//        ShowSeat showSeat1Updated = ShowSeat.builder()
-//                .id(UUID.randomUUID())
-//                .show(savedShowUpdated)
-//                .seat(seat1Updated)
-//                .status(ShowSeatStatus.AVAILABLE)
-//                .build();
-//
-//        ShowSeat showSeat2Updated = ShowSeat.builder()
-//                .id(UUID.randomUUID())
-//                .show(savedShowUpdated)
-//                .seat(seat2Updated)
-//                .status(ShowSeatStatus.AVAILABLE)
-//                .build();
-//        savedShowUpdated.setShowSeats(List.of(showSeat1Updated,showSeat2Updated));
 
         ShowResponseDto showResponseDto = new ShowResponseDto(
                 savedShowUpdated.getId(),
