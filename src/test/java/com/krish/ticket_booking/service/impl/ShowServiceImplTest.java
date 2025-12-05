@@ -4,6 +4,7 @@ import com.krish.ticket_booking.dto.request.ShowRegisterRequestDto;
 import com.krish.ticket_booking.dto.response.ShowResponseDto;
 import com.krish.ticket_booking.entity.*;
 import com.krish.ticket_booking.entity.enums.LayoutType;
+import com.krish.ticket_booking.entity.enums.RoleEnum;
 import com.krish.ticket_booking.entity.enums.SeatCategory;
 import com.krish.ticket_booking.entity.enums.ShowSeatStatus;
 import com.krish.ticket_booking.exception.ShowNotFoundException;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,6 +50,9 @@ class ShowServiceImplTest {
 
     @Mock
     private ShowMapper showMapper;
+
+    @Mock
+    private Authentication authentication;
 
     @InjectMocks
     private ShowServiceImpl showServiceImpl;
@@ -455,7 +460,155 @@ class ShowServiceImplTest {
     }
 
     @Test
-    void getListOfShowsByManager() {
+    void getListOfShowsByManager_ShouldFetchShowsByManagerId_successfully() {
+        UUID managerId = UUID.randomUUID();
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        UUID id3 = UUID.randomUUID();
+        UUID id4 = UUID.randomUUID();
+        UUID screenId1 = UUID.randomUUID();
+        UUID screenId2 = UUID.randomUUID();
+        UUID screenId3 = UUID.randomUUID();
+        UUID movieId = UUID.randomUUID();
+        String email = "user@manager.com";
+        LocalDateTime now = LocalDateTime.now();
+
+        Movie movie = Movie.builder()
+                .id(movieId)
+                .title("KalamKaval")
+                .language("Malayalam")
+                .build();
+
+        User user = User.builder()
+                .role(RoleEnum.MANAGER)
+                .email(email)
+                .name("manager")
+                .id(managerId)
+                .build();
+
+        Theater theater1 = Theater.builder()
+                .manager(user)
+                .name("Jose Cinemas")
+                .build();
+
+        Theater theater2 = Theater.builder()
+                .manager(user)
+                .name("Maruthi Cinemas")
+                .build();
+
+        Screen screen1 = Screen.builder()
+                .id(screenId1)
+                .theater(theater1)
+                .name("screen1")
+                .build();
+        theater1.setScreens(List.of(screen1));
+
+        Screen screen2 = Screen.builder()
+                .id(screenId2)
+                .theater(theater2)
+                .name("screen2")
+                .build();
+
+        Screen screen3 = Screen.builder()
+                .id(screenId3)
+                .theater(theater2)
+                .name("screen3")
+                .build();
+
+
+        theater2.setScreens(List.of(screen2,screen3));
+
+        Show show1 = Show.builder()
+                .id(id1)
+                .movie(movie)
+                .extraCharge(10)
+                .screen(screen1)
+                .startTime(now.plusHours(1))
+                .build();
+
+        Show show2 = Show.builder()
+                .screen(screen1)
+                .id(id2)
+                .movie(movie)
+                .extraCharge(10)
+                .startTime(now.plusHours(2))
+                .build();
+        screen1.setShows(List.of(show1,show2));
+
+        Show show3 = Show.builder()
+                .id(id3)
+                .screen(screen2)
+                .movie(movie)
+                .extraCharge(10)
+                .startTime(now.plusHours(3))
+                .build();
+        screen2.setShows(List.of(show3));
+
+        Show show4 = Show.builder()
+                .id(id4)
+                .movie(movie)
+                .extraCharge(10)
+                .screen(screen3)
+                .startTime(now.plusHours(4))
+                .build();
+        screen3.setShows(List.of(show4));
+
+        ShowResponseDto show1Dto = new ShowResponseDto(
+                id1,
+                10,
+                now.plusHours(1),
+                movieId,
+                screenId1
+        );
+
+        ShowResponseDto show2Dto = new ShowResponseDto(
+                id2,
+                10,
+                now.plusHours(2),
+                movieId,
+                screenId1
+        );
+
+        ShowResponseDto show3Dto = new ShowResponseDto(
+                id3,
+                10,
+                now.plusHours(3),
+                movieId,
+                screenId2
+        );
+
+        ShowResponseDto show4Dto = new ShowResponseDto(
+                id4,
+                10,
+                now.plusHours(4),
+                movieId,
+                screenId3
+        );
+
+        when(authentication.getName()).thenReturn(email);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(theaterRepository.findByManagerId(managerId)).thenReturn(List.of(theater1,theater2));
+        when(showMapper.toDto(show1)).thenReturn(show1Dto);
+        when(showMapper.toDto(show2)).thenReturn(show2Dto);
+        when(showMapper.toDto(show3)).thenReturn(show3Dto);
+        when(showMapper.toDto(show4)).thenReturn(show4Dto);
+
+        List<ShowResponseDto> listOfShowsByManager = showServiceImpl.getListOfShowsByManager(authentication);
+
+        assertEquals(4,listOfShowsByManager.size());
+        assertTrue(listOfShowsByManager.contains(show1Dto));
+        assertTrue(listOfShowsByManager.contains(show2Dto));
+        assertTrue(listOfShowsByManager.contains(show3Dto));
+        assertTrue(listOfShowsByManager.contains(show4Dto));
+
+        verify(authentication).getName();
+        verify(userRepository).findByEmail(email);
+        verify(theaterRepository).findByManagerId(managerId);
+        verify(showMapper).toDto(show1);
+        verify(showMapper).toDto(show2);
+        verify(showMapper).toDto(show4);
+        verify(showMapper).toDto(show3);
+
     }
 
     @Test
