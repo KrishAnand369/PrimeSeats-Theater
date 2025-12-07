@@ -161,7 +161,7 @@ public class BookingServiceImpl implements BookingService {
         for (ShowSeat s : seats) {
             s.setStatus(ShowSeatStatus.BOOKED);
             s.setReservedUntil(null);
-            // keep s.setBooking(booking) to preserve linkage (your model keeps booking on ShowSeat)
+            // keep s.setBooking(booking) to preserve linkage (model keeps booking on ShowSeat)
         }
 
         // 4) Mark booking confirmed & create ticket
@@ -179,7 +179,6 @@ public class BookingServiceImpl implements BookingService {
         // 5) Build response
         List<String> labels = seats.stream()
                 .map(ss -> {
-                    // Prefer Seat.getSeatLabel() @Transient if you added it; otherwise build here.
                     String row = ss.getSeat().getSeatRow().getRowLabel();
                     return row + ss.getSeat().getSeatNumber();
                 })
