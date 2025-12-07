@@ -1,13 +1,17 @@
 package com.krish.ticket_booking.service.impl;
 
 import com.krish.ticket_booking.dto.request.ShowRegisterRequestDto;
+import com.krish.ticket_booking.dto.response.ShowLayoutResponseDto;
 import com.krish.ticket_booking.dto.response.ShowResponseDto;
+import com.krish.ticket_booking.dto.response.ShowRowResponseDto;
+import com.krish.ticket_booking.dto.response.ShowSeatResponseDto;
 import com.krish.ticket_booking.entity.*;
 import com.krish.ticket_booking.entity.enums.LayoutType;
 import com.krish.ticket_booking.entity.enums.RoleEnum;
 import com.krish.ticket_booking.entity.enums.SeatCategory;
 import com.krish.ticket_booking.entity.enums.ShowSeatStatus;
 import com.krish.ticket_booking.exception.ShowNotFoundException;
+import com.krish.ticket_booking.exception.UserNotFoundException;
 import com.krish.ticket_booking.mapper.ShowMapper;
 import com.krish.ticket_booking.repository.*;
 import org.junit.jupiter.api.Test;
@@ -612,11 +616,158 @@ class ShowServiceImplTest {
     }
 
     @Test
-    void getShowLayout() {
+    void getListOfShowsByManager_ShouldThrowManagerNotFundException_whenUserIsNotFound() {
+        String email ="user@example.com";
+
+        when(authentication.getName()).thenReturn(email);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        UserNotFoundException userNotFoundException = assertThrows(UserNotFoundException.class, () -> showServiceImpl.getListOfShowsByManager(authentication));
+
+        assertEquals("Manager Not Found Exception",userNotFoundException.getMessage());
+
+        verify(authentication).getName();
+        verify(userRepository).findByEmail(email);
+        verify(theaterRepository,never()).findByManagerId(any());
+        verify(showMapper,never()).toDto(any());
     }
 
     @Test
-    void getShowBookedSeats() {
+    void getShowLayout_ShouldGetShowLayoutByShowId_Successfully() {
+        UUID showId = UUID.randomUUID();
+        UUID seatRowId = UUID.randomUUID();
+        LocalDateTime showStartTime = LocalDateTime.now();
+
+        Movie movie = Movie.builder()
+                .id(UUID.randomUUID())
+                .language("Malayalam")
+                .title("KalamKaval")
+                .build();
+
+        Show show = Show.builder()
+                .id(showId)
+                .extraCharge(10)
+                .movie(movie)
+                .startTime(showStartTime)
+                .build();
+
+        SeatRow seatRow = SeatRow.builder()
+                .rowLabel("A")
+                .id(seatRowId)
+                .build();
+
+        Seat seat1 = Seat.builder()
+                .price(150.00)
+                .seatNumber(10)
+                .seatRow(seatRow)
+                .build();
+
+        Seat seat2 = Seat.builder()
+                .price(150.00)
+                .seatNumber(11)
+                .seatRow(seatRow)
+                .build();
+
+        seatRow.setSeats(List.of(seat1,seat2));
+
+
+
+        ShowSeat showSeat1 = ShowSeat.builder()
+                .id(UUID.randomUUID())
+                .show(show)
+                .seat(seat1)
+                .status(ShowSeatStatus.AVAILABLE)
+                .build();
+
+        ShowSeat showSeat2 = ShowSeat.builder()
+                .id(UUID.randomUUID())
+                .show(show)
+                .seat(seat2)
+                .status(ShowSeatStatus.AVAILABLE)
+                .build();
+
+        show.setShowSeats(List.of(showSeat1,showSeat2));
+
+        
+
+        when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+
+        ShowLayoutResponseDto result = showServiceImpl.getShowLayout(showId);
+
+        assertNotNull(result);
+        assertEquals(showId, result.showId());
+        assertEquals("KalamKaval", result.movieTitle());
+        assertEquals(showStartTime, result.startTime());
+
+        assertEquals(1, result.rows().size()); // Should have 1 row ("A")
+        ShowRowResponseDto rowDto = result.rows().getFirst();
+        assertEquals("A", rowDto.rowLabel());
+
+        // Verify Seats in Row
+        assertEquals(2, rowDto.seats().size());
+
+        // Verify Seat 1 Details (Price should be Base + Extra = 150 + 10 = 160)
+        List<ShowSeatResponseDto> seats = rowDto.seats();
+        assertTrue( seats.stream().anyMatch(s1->
+            s1.status().equals(ShowSeatStatus.AVAILABLE)
+        ));
+        assertTrue(seats.stream().anyMatch(s1->
+                s1.seatLabel().equals("A10")));
+        assertTrue(seats.stream().anyMatch(s1->
+                s1.price().equals(160.00)));
+
+        verify(showRepository).findById(showId);
+
+
+
+    }
+
+    @Test
+    void getShowBookedSeats_ShouldFetchBookedSeats_Successfully() {
+        UUID showId = UUID.randomUUID();
+        UUID showSeat1Id = UUID.randomUUID();
+        UUID showSeat2Id = UUID.randomUUID();
+        UUID showSeat3Id = UUID.randomUUID();
+
+        Show show = Show.builder()
+                .id(showId)
+                .extraCharge(10)
+                .build();
+
+        ShowSeat showSeat1 = ShowSeat.builder()
+                .id(showSeat1Id)
+                .show(show)
+                .status(ShowSeatStatus.BOOKED)
+                .build();
+
+        ShowSeat showSeat2 = ShowSeat.builder()
+                .id(showSeat2Id)
+                .show(show)
+                .status(ShowSeatStatus.AVAILABLE)
+                .build();
+
+        ShowSeat showSeat3 = ShowSeat.builder()
+                .id(showSeat3Id)
+                .show(show)
+                .status(ShowSeatStatus.BOOKED)
+                .build();
+
+        show.setShowSeats(List.of(showSeat1,showSeat2,showSeat3));
+
+        when(showRepository.findById(showId)).thenReturn(Optional.of(show));
+        when(showSeatRepository.findByShowIdAndStatus(showId,ShowSeatStatus.BOOKED)).thenReturn(List.of(showSeat1,showSeat3));
+
+        List<UUID> result = showServiceImpl.getShowBookedSeats(showId);
+
+        assertNotNull(result);
+        assertEquals(2,result.size());
+        assertTrue(result.contains(showSeat1Id));
+        assertFalse(result.contains(showSeat2Id));
+        assertTrue(result.contains(showSeat3Id));
+
+        verify(showRepository).findById(showId);
+        verify(showSeatRepository).findByShowIdAndStatus(showId,ShowSeatStatus.BOOKED);
+
     }
 
     @Test
