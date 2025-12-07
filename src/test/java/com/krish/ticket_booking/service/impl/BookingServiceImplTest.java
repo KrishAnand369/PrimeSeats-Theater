@@ -128,12 +128,10 @@ public class BookingServiceImplTest {
     void reserveSeats_ShouldThrowException_WhenNumberOfSeatsExceedsLimit(){
         // Arrange
         UUID showId = UUID.randomUUID();
-        UUID seatId = UUID.randomUUID();
         List<UUID> seatIds = new ArrayList<>();
         for (int i = 0; i < 11; i++) {
            seatIds.add(UUID.randomUUID());
         }
-        seatIds.add(seatId);
         String guestEmail = "example@example.com";
 
         ReserveRequest reserveRequest = new ReserveRequest(
@@ -143,10 +141,10 @@ public class BookingServiceImplTest {
         );
 
         // Act
-        IllegalAccessException illegalAccessException = assertThrows(IllegalAccessException.class, () -> bookingService.reserveSeats(reserveRequest, Optional.empty()));
+        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> bookingService.reserveSeats(reserveRequest, Optional.empty()));
 
         // Assert
-        assertEquals("You can book at most 10 seats", illegalAccessException.getMessage());
+        assertEquals("You can book at most 10 seats", illegalArgumentException.getMessage());
         verify(bookingRepo,never()).save(any());
         verify(bookingSeatRepo,never()).saveAll(any());
     }
@@ -195,7 +193,7 @@ public class BookingServiceImplTest {
         // Assert
         assertNotNull(response);
         assertEquals(110.0, response.totalAmount());
-        ArgumentCaptor<Booking> bookingCaptor = ArgumentCaptor.forClass(Booking.class); //same ass using @Captor but as this is used only in this methode this is better
+        ArgumentCaptor<Booking> bookingCaptor = ArgumentCaptor.forClass(Booking.class); //same as using @Captor but as this is used only in this methode this is better
         verify(bookingRepo).save(bookingCaptor.capture());
         Booking savedBooking = bookingCaptor.getValue();
         assertEquals(user, savedBooking.getUser());
