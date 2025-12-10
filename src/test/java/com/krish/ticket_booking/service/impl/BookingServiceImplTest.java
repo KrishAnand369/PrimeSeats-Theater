@@ -116,10 +116,10 @@ public class BookingServiceImplTest {
         when(showSeatRepo.findAllByIdForUpdate(any())).thenReturn(List.of(showSeat));
 
         // Act
-        IllegalStateException illegalAccessException = assertThrows(IllegalStateException.class, () -> bookingService.reserveSeats(reserveRequest, Optional.empty()));
+        IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> bookingService.reserveSeats(reserveRequest, Optional.empty()));
 
         // Assert
-        assertEquals("Seat not available: "+seatId, illegalAccessException.getMessage());
+        assertEquals("Seat not available: "+seatId, illegalStateException.getMessage());
         verify(bookingRepo,never()).save(any());
         verify(bookingSeatRepo,never()).saveAll(any());
     }
@@ -193,7 +193,7 @@ public class BookingServiceImplTest {
         // Assert
         assertNotNull(response);
         assertEquals(110.0, response.totalAmount());
-        ArgumentCaptor<Booking> bookingCaptor = ArgumentCaptor.forClass(Booking.class); //same as using @Captor but as this is used only in this methode this is better
+        ArgumentCaptor<Booking> bookingCaptor = ArgumentCaptor.forClass(Booking.class); //same as using @Captor but as this is used only in this method this is better
         verify(bookingRepo).save(bookingCaptor.capture());
         Booking savedBooking = bookingCaptor.getValue();
         assertEquals(user, savedBooking.getUser());
@@ -235,7 +235,6 @@ public class BookingServiceImplTest {
 
         when(showRepo.findById(showId)).thenReturn(Optional.of(show));
         when(showSeatRepo.findAllByIdForUpdate(any())).thenReturn(List.of(showSeat));
-       // when(bookingRepo.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
         IllegalArgumentException response = assertThrows(IllegalArgumentException.class, () -> bookingService.reserveSeats(reserveRequest, Optional.empty()));
@@ -247,7 +246,7 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void  confirmBooking_shouldConfirmBooking_Successfully(){
+    void  confirmBooking_shouldConfirmBooking_Successfully() {
         UUID bookingId = UUID.randomUUID();
         UUID showId1 = UUID.randomUUID();
         UUID seatId1 = UUID.randomUUID();
