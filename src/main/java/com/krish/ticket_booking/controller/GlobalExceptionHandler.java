@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * across all controllers in the application.
  */
 @RestControllerAdvice
-@Hidden //to avoid confusions in the wagger documentation
+@Hidden //to avoid confusions in the swagger documentation
 public class GlobalExceptionHandler {
 
 
